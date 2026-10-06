@@ -107,10 +107,14 @@ loaded.
 This repository is `PlatyByte/platybyte.github.io`. It already serves another
 site, so the switch to the apex domain takes a few deliberate steps.
 
-The Pages configuration today is a legacy branch build. It serves the branch
-`simple-html` at `blog.platybyte.net`, with a certificate that expires on
-2026-11-26. The branch `master` holds an older mkdocs site. The default
-branch is `master`.
+The state on 2026-10-06, read from the GitHub API:
+
+- Pages build type: `legacy`, which means a branch build, not Actions.
+- Pages source branch: `gh-pages`.
+- Pages custom domain: `blog.platybyte.net`. Enforce HTTPS is off.
+- Default branch: `main`.
+- The `github-pages` environment uses a custom branch allowlist holding
+  `dendron-pages`, `gh-pages`, `master` and `simple-html`. `main` is absent.
 
 The workflow in this repository runs on a push to `main`. The build job
 passes. The deploy job stops with this message:
@@ -120,36 +124,39 @@ Branch "main" is not allowed to deploy to github-pages due to environment
 protection rules.
 ```
 
-The `github-pages` environment allows a deployment only from the default
-branch and from the branch that Pages is configured to serve. That rule is
-what protects the live site right now.
+A custom allowlist replaces the default-branch rule, so making `main` the
+default branch does not clear this on its own. The branch has to be in the
+list by name.
 
 One repository serves one Pages site with one custom domain. Moving to the
 apex domain `platybyte.net` therefore ends `blog.platybyte.net`. The artwork
 that site shows is already part of this site, at `/platybyte.jpg`, so the
 picture survives the move even though that address does not.
 
-### The switch, in order
+### The two settings that block the deploy
+
+1. Settings, then Environments, then `github-pages`, then Deployment
+   branches and tags. Add a rule with the name `main`.
+2. Settings, then Pages. Change Source from "Deploy from a branch" to
+   "GitHub Actions". At this moment `blog.platybyte.net` stops serving a
+   site.
+
+### The full switch, in order
 
 1. Add the DNS records for the apex at your registrar, listed further down.
-   Do this first. The certificate request later needs them in place.
-2. Open Settings, then Pages, and set Source to GitHub Actions. This ends
-   the legacy branch build and `blog.platybyte.net` stops serving a site.
-3. Open Settings, then Branches, and set the default branch to `main`. The
-   `github-pages` environment allows the default branch, so this one change
-   also clears the rule that rejected the deploy. If you keep `master` as
-   the default, open Settings, then Environments, then `github-pages`, and
-   add `main` to the allowed deployment branches instead.
-4. Open the Actions tab, pick the last run of "Deploy to GitHub Pages", and
+   Do this first. The certificate request in step 5 needs them in place.
+2. Add `main` to the `github-pages` deployment branch allowlist.
+3. Set the Pages source to GitHub Actions.
+4. Open the Actions tab, pick the last run of "Deploy to GitHub Pages" and
    press "Re-run all jobs". The `workflow_dispatch` trigger also works.
 5. The deploy reads `public/CNAME` from the artifact and sets the custom
-   domain to `platybyte.net`. Wait for the certificate, then turn on
-   "Enforce HTTPS" in Settings, then Pages.
-6. Open Settings on your account, then Pages, and verify `platybyte.net` as
+   domain to `platybyte.net`. Wait for the certificate.
+6. Turn on "Enforce HTTPS" in Settings, then Pages.
+7. Open Settings on your account, then Pages, and verify `platybyte.net` as
    a verified domain. This stops another account from claiming it.
 
-The branches `simple-html`, `master` and `gh-pages` keep their content
-through all of this. Nothing is deleted.
+The branches `simple-html`, `master`, `gh-pages` and `dendron-pages` keep
+their content through all of this. Nothing is deleted.
 
 ## The artwork and the theme
 
