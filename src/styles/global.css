@@ -73,6 +73,10 @@ a {
   color: var(--accent);
   text-decoration-thickness: 1px;
   text-underline-offset: 0.15em;
+  /* The platypus bill, the same cursor the old one-page site used over its
+     link. The hotspot 0 0 is the bill tip at the top left of the image.
+     `pointer` is the fallback if the image fails to load. */
+  cursor: url("/cursor.png") 0 0, pointer;
 }
 
 a:hover,

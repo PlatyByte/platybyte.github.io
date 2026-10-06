@@ -64,7 +64,10 @@ check 'full content in the feed' "$DIST/rss.xml" '<content:encoded>'
 check 'absolute item link'       "$DIST/rss.xml" '<link>https://platybyte.net/blog/'
 
 echo '-- deployment files'
-check 'CNAME holds the domain'   "$DIST/CNAME" 'platybyte.net'
+# There is no CNAME file on purpose. With GitHub Actions as the publishing
+# source, GitHub ignores any CNAME file in the artifact. The custom domain
+# lives in Settings, then Pages.
+absent 'no CNAME file in the build' "$DIST/CNAME"
 check 'robots points to sitemap' "$DIST/robots.txt" 'Sitemap: https://platybyte.net/sitemap-index.xml'
 check 'sitemap exists'           "$DIST/sitemap-index.xml" 'sitemap'
 

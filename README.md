@@ -107,14 +107,20 @@ loaded.
 This repository is `PlatyByte/platybyte.github.io`. It already serves another
 site, so the switch to the apex domain takes a few deliberate steps.
 
-The state on 2026-10-06, read from the GitHub API:
+The state on 2026-10-06, read from the GitHub API and from public DNS:
 
 - Pages build type: `legacy`, which means a branch build, not Actions.
-- Pages source branch: `gh-pages`.
+- Pages source branch: `gh-pages`. That branch holds a `CNAME` file reading
+  `blog.platybyte.net`, which is what pins the custom domain today.
 - Pages custom domain: `blog.platybyte.net`. Enforce HTTPS is off.
 - Default branch: `main`.
 - The `github-pages` environment uses a custom branch allowlist holding
   `dendron-pages`, `gh-pages`, `master` and `simple-html`. `main` is absent.
+- DNS: the nameservers are `dns1.registrar-servers.com` and
+  `dns2.registrar-servers.com`, which is Namecheap. The apex `platybyte.net`
+  has no `A` record and no `AAAA` record. `blog.platybyte.net` is a `CNAME`
+  to `platybyte.github.io`. There is no `www` record and no domain
+  verification `TXT` record.
 
 The workflow in this repository runs on a push to `main`. The build job
 passes. The deploy job stops with this message:
@@ -128,35 +134,86 @@ A custom allowlist replaces the default-branch rule, so making `main` the
 default branch does not clear this on its own. The branch has to be in the
 list by name.
 
+### There is no CNAME file, on purpose
+
+GitHub documents this: "If you are publishing from a custom GitHub Actions
+workflow, no `CNAME` file is created, and any existing `CNAME` file is
+ignored and is not required." A file in the repository therefore cannot set
+the custom domain. You set it in Settings, then Pages, or through the API.
+
+That is why `public/CNAME` does not exist here. An earlier version of this
+project shipped one. It did nothing.
+
+### The switch, in order
+
 One repository serves one Pages site with one custom domain. Moving to the
 apex domain `platybyte.net` therefore ends `blog.platybyte.net`. The artwork
 that site shows is already part of this site, at `/platybyte.jpg`, so the
 picture survives the move even though that address does not.
 
-### The two settings that block the deploy
-
 1. Settings, then Environments, then `github-pages`, then Deployment
    branches and tags. Add a rule with the name `main`.
 2. Settings, then Pages. Change Source from "Deploy from a branch" to
    "GitHub Actions". At this moment `blog.platybyte.net` stops serving a
-   site.
-
-### The full switch, in order
-
-1. Add the DNS records for the apex at your registrar, listed further down.
-   Do this first. The certificate request in step 5 needs them in place.
-2. Add `main` to the `github-pages` deployment branch allowlist.
-3. Set the Pages source to GitHub Actions.
-4. Open the Actions tab, pick the last run of "Deploy to GitHub Pages" and
-   press "Re-run all jobs". The `workflow_dispatch` trigger also works.
-5. The deploy reads `public/CNAME` from the artifact and sets the custom
-   domain to `platybyte.net`. Wait for the certificate.
+   site. Do this before step 3, because while the branch build is active
+   the `CNAME` file on `gh-pages` keeps resetting the custom domain.
+3. On the same page, set Custom domain to `platybyte.net` and save. GitHub
+   checks DNS, which still fails at this point. That is expected.
+4. Add the DNS records at Namecheap, listed below. GitHub asks you to claim
+   the domain before pointing DNS at it, because DNS aimed at GitHub's
+   shared addresses without a claim lets another account host a site there.
+5. Wait for the DNS check to pass and the certificate to be issued. This can
+   take up to 24 hours.
 6. Turn on "Enforce HTTPS" in Settings, then Pages.
-7. Open Settings on your account, then Pages, and verify `platybyte.net` as
-   a verified domain. This stops another account from claiming it.
+7. Open the Actions tab, pick the last run of "Deploy to GitHub Pages" and
+   press "Re-run all jobs". The `workflow_dispatch` trigger also works.
 
 The branches `simple-html`, `master`, `gh-pages` and `dendron-pages` keep
 their content through all of this. Nothing is deleted.
+
+### DNS records at Namecheap
+
+Open Domain List, then Manage for `platybyte.net`, then Advanced DNS. The
+host `@` means the apex.
+
+| Type   | Host | Value             |
+| ------ | ---- | ----------------- |
+| A      | `@`  | `185.199.108.153` |
+| A      | `@`  | `185.199.109.153` |
+| A      | `@`  | `185.199.110.153` |
+| A      | `@`  | `185.199.111.153` |
+| AAAA   | `@`  | `2606:50c0:8000::153` |
+| AAAA   | `@`  | `2606:50c0:8001::153` |
+| AAAA   | `@`  | `2606:50c0:8002::153` |
+| AAAA   | `@`  | `2606:50c0:8003::153` |
+
+Namecheap also offers an `ALIAS` record, and GitHub accepts one for an apex:
+"To create an `ALIAS` or `ANAME` record, point your apex domain to the
+default domain for your site." One `ALIAS` on `@` pointing at
+`platybyte.github.io` replaces all eight records above. The eight records
+are the documented default, so use them unless you prefer the single record.
+
+Two optional records:
+
+- A `CNAME` on host `www` pointing at `platybyte.github.io`, if you want
+  `www.platybyte.net` to work. GitHub redirects it to the apex.
+- A `TXT` record on host `_github-pages-challenge-platybyte` holding the
+  token from your account Settings, then Pages. This verifies the domain and
+  stops another account from claiming it. Get the token first, because it is
+  generated per account.
+
+The existing `blog` record is a `CNAME` to `platybyte.github.io`. Once the
+custom domain is the apex, a request to `blog.platybyte.net` still reaches
+GitHub but carries a host name GitHub no longer recognizes, so it answers
+with a 404 page. Delete the record, or leave it and accept the 404. GitHub
+Pages cannot redirect it to the apex.
+
+Check the records once they propagate:
+
+```sh
+dig +short platybyte.net A
+dig +short platybyte.net AAAA
+```
 
 ## The artwork and the theme
 
@@ -168,6 +225,9 @@ It appears here in three sizes, all cut from the same 1024px original:
 - `public/avatar.jpg` is a 384px crop of the head, shown in the `h-card`.
 - `public/favicon-32.png` and `public/apple-touch-icon.png` are the icons,
   cut from the same crop.
+- `public/cursor.png` is the 20x25 bill cursor, the same file the old
+  one-page site used. Every link shows it, with the hotspot at the bill tip
+  in the top left corner and `pointer` as the fallback.
 
 The palette in `src/styles/global.css` is sampled from that picture. The
 sunset haze gives the light background, the darkest fur gives the light
