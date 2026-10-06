@@ -63,6 +63,15 @@ echo '-- feed'
 check 'full content in the feed' "$DIST/rss.xml" '<content:encoded>'
 check 'absolute item link'       "$DIST/rss.xml" '<link>https://platybyte.net/blog/'
 
+echo '-- images'
+check 'banner on the homepage'  "$DIST/index.html" 'class="banner"'
+check 'banner is the og:image'  "$DIST/index.html" 'og:image" content="https://platybyte.net/banner.jpg"'
+check 'platypus cursor on links' "$DIST/index.html" 'cursor:url(/cursor.png)'
+for f in banner.jpg avatar.jpg platybyte.jpg cursor.png favicon-32.png apple-touch-icon.png; do
+  if [ -f "$DIST/$f" ]; then printf 'ok    %s present\n' "$f"
+  else printf 'FAIL  %s missing from %s\n' "$f" "$DIST"; fail=1; fi
+done
+
 echo '-- deployment files'
 # There is no CNAME file on purpose. With GitHub Actions as the publishing
 # source, GitHub ignores any CNAME file in the artifact. The custom domain

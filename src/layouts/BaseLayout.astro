@@ -7,7 +7,7 @@ import {
   SITE_DESCRIPTION,
   PROFILE_LINKS,
   WEBMENTION_ENDPOINT,
-  ARTWORK,
+  BANNER,
 } from '../site';
 
 interface Props {
@@ -37,8 +37,8 @@ const year = new Date().getUTCFullYear();
          artwork and the palette derived from it. -->
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="theme-color" content="#f7f0e2" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#101816" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f6f2fb" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a1033" media="(prefers-color-scheme: dark)" />
 
     <!-- The feed. Bridgy Fed discovers the site through this element. -->
     <link
@@ -73,8 +73,8 @@ const year = new Date().getUTCFullYear();
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={new URL(ARTWORK, Astro.site).href} />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content={new URL(BANNER, Astro.site).href} />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>

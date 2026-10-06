@@ -1,28 +1,33 @@
 /*
- * The palette comes from public/avatar.jpg, the PlatyByte artwork.
+ * The palette comes from public/banner.jpg, the synthwave sunset banner.
  * Every value below was sampled from that image, then adjusted until it
  * passed the WCAG AA contrast ratio of 4.5:1 against its own background.
  *
  * Sampled source colours:
- *   #f0dda6  sunset haze        -> light background
- *   #22140d  darkest fur        -> light foreground
- *   #2d4742  deep water teal    -> light link, dark background
- *   #6a2614  rust, the red eye  -> light hover and focus
- *   #5df8f2  the cyan robot eye -> dark link
- *   #ffd581  amber rim light    -> dark hover
- *   #eb7ac5  magenta circuitry  -> dark focus
+ *   #37235b  deep indigo sky     -> dark background, light rule
+ *   #4c2d6f  violet mountains    -> dark card, light muted text
+ *   #c7518a  magenta cloud       -> light link
+ *   #e661af  neon magenta grid   -> dark hover
+ *   #47a1ca  neon cyan grid      -> dark link, brightened to clear 4.5:1
+ *   #ffa75c  the sun             -> dark focus ring
+ *   #e86f7a  coral haze          -> light focus ring, warmed
+ *
+ * Dark is the native register for this palette. Light mode keeps the same
+ * hues but inverts the roles, so the site stays readable on paper and in
+ * bright sun without pretending a neon grid belongs on a white page.
  */
 
 :root {
-  --bg: #f7f0e2;
-  --fg: #241711;
-  --muted: #6a5343;
-  --accent: #0a5b55;
-  --accent-hover: #8a2a10;
-  --rule: #d8c6a4;
-  --card: #efe4cb;
-  --focus: #b23a0e;
-  --shadow: rgba(36, 23, 17, 0.1);
+  --bg: #f6f2fb;
+  --fg: #241540;
+  --muted: #5d4a78;
+  --accent: #8a1f6b;
+  --accent-hover: #0d5a6e;
+  --rule: #ddd2ec;
+  --card: #ebe3f6;
+  --focus: #b4400f;
+  --shadow: rgba(36, 21, 64, 0.14);
+  --glow: none;
   --measure: 38rem;
   --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
     Arial, sans-serif;
@@ -32,15 +37,16 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #101816;
-    --fg: #eae0cd;
-    --muted: #9bada5;
-    --accent: #63e8e0;
-    --accent-hover: #ffd581;
-    --rule: #32453f;
-    --card: #192420;
-    --focus: #f08ccb;
-    --shadow: rgba(0, 0, 0, 0.45);
+    --bg: #1a1033;
+    --fg: #ece4f7;
+    --muted: #a99ac4;
+    --accent: #4fe3e8;
+    --accent-hover: #ff7ab8;
+    --rule: #3a2a5e;
+    --card: #241642;
+    --focus: #ffa75c;
+    --shadow: rgba(0, 0, 0, 0.55);
+    --glow: 0 0 18px rgba(79, 227, 232, 0.28);
   }
 }
 
@@ -215,7 +221,26 @@ hr {
   border-radius: 50%;
   object-fit: cover;
   background: var(--card);
-  box-shadow: 0 2px 10px var(--shadow);
+  box-shadow: 0 2px 10px var(--shadow), var(--glow);
+}
+
+/* The banner. A wide strip of the full image, framed on the sun. */
+.banner {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 1;
+  object-fit: cover;
+  object-position: center 26%;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  background: var(--card);
+  box-shadow: 0 2px 14px var(--shadow);
+}
+
+@media (max-width: 30rem) {
+  .banner {
+    aspect-ratio: 2 / 1;
+  }
 }
 
 .card-head h1 {

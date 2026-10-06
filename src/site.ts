@@ -26,6 +26,9 @@ export const BIO = 'TODO short bio: one sentence about who you are.';
 export const AVATAR = '/avatar.jpg';
 export const ARTWORK = '/platybyte.jpg';
 
+/** The synthwave banner. The site palette is sampled from this image. */
+export const BANNER = '/banner.jpg';
+
 /**
  * Profile URLs used for rel="me" links and for the two short redirects.
  *

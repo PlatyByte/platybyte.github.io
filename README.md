@@ -215,26 +215,62 @@ dig +short platybyte.net A
 dig +short platybyte.net AAAA
 ```
 
-## The artwork and the theme
+## The banner, the artwork and the theme
 
-The PlatyByte artwork is the same picture that `blog.platybyte.net` served.
-It appears here in three sizes, all cut from the same 1024px original:
+`public/banner.jpg` is the synthwave banner: a striped sun over purple
+mountains, mirrored in water above a neon grid. It is the reusable asset,
+1536x1024, and it serves from `https://platybyte.net/banner.jpg` so other
+sites can point at it. The homepage shows it as a wide strip, cropped by CSS
+rather than by a second file, and it is the `og:image` for every page.
 
-- `public/platybyte.jpg` is the original, byte for byte. The avatar links
-  to it.
-- `public/avatar.jpg` is a 384px crop of the head, shown in the `h-card`.
-- `public/favicon-32.png` and `public/apple-touch-icon.png` are the icons,
-  cut from the same crop.
-- `public/cursor.png` is the 20x25 bill cursor, the same file the old
-  one-page site used. Every link shows it, with the hotspot at the bill tip
-  in the top left corner and `pointer` as the fallback.
+The PlatyByte artwork is the picture that `blog.platybyte.net` served. It
+appears here in these forms:
 
-The palette in `src/styles/global.css` is sampled from that picture. The
-sunset haze gives the light background, the darkest fur gives the light
-text, the deep water teal gives the light link colour and the dark
-background, and the cyan robot eye gives the dark link colour. Every pair
-was measured against the WCAG AA ratio of 4.5:1 and passes. The comment at
-the top of the stylesheet lists each source colour.
+- `public/platybyte.jpg` is the original, byte for byte, ungraded. The
+  avatar links to it, so the picture as it was stays reachable.
+- `public/avatar.jpg` is a 384px crop of the head, graded toward the banner.
+- `public/favicon-32.png` and `public/apple-touch-icon.png` come from the
+  same graded crop.
+- `public/cursor.png` is the 20x25 bill cursor, graded the same way. Every
+  link shows it, with the hotspot at the bill tip in the top left corner and
+  `pointer` as the fallback.
+
+### How the grading works
+
+`tools/grade.py` does it, and it is reproducible. The script maps the
+luminance of the source through a three stop ramp, from indigo `#140b2e` in
+the shadows through magenta `#c7419a` in the midtones to amber `#ff9d5c` in
+the highlights. It blends that result back over the original at 80 percent,
+so the animal stays readable instead of flattening into a duotone. It then
+masks the original cyan circuitry, the robot eye above all, and paints it
+back brightened, so the eye reads as neon the way the banner's grid lines
+do. Alpha survives, which is what keeps the cursor transparent.
+
+Run it on any source:
+
+```sh
+python3 tools/grade.py input.png output.png
+```
+
+The script needs Pillow. It is not part of the site build, and the generated
+files are committed, so a deploy never runs it.
+
+### The palette
+
+`src/styles/global.css` samples the banner. The deep indigo sky becomes the
+dark background, the violet mountains the dark card, the neon cyan grid the
+dark link colour, the neon magenta grid the dark hover, and the sun the dark
+focus ring. Light mode keeps the same hues and inverts the roles: a pale
+lavender page, deep indigo text, a magenta link and a deep teal hover.
+
+Dark is the native register for this palette. Light mode exists so the site
+stays readable on paper and in bright sun, without pretending a neon grid
+belongs on a white page.
+
+Every text pair was measured against its own background. The lowest ratio is
+5.17:1 and most are above 7:1, so all of it clears WCAG AA and most clears
+AAA. The comment at the top of the stylesheet lists each sampled colour next
+to the role it fills.
 
 ## Microformats and the feed
 
