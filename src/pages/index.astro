@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { NAME, BIO, AVATAR, SITE_URL, DOMAIN, PROFILE_LINKS } from '../site';
+import { allPosts, postPath, postLabel, readableDate, machineDate } from '../posts';
+
+const recent = (await allPosts()).slice(0, 5);
+---
+
+<BaseLayout>
+  <!-- The representative h-card. Bridgy Fed reads p-name, u-url, u-photo
+       and p-note from this block. The u-url also carries rel="me", which
+       marks the card as the one that represents this page. -->
+  <div class="h-card">
+    <div class="card-head">
+      <img class="u-photo avatar" src={AVATAR} alt={`Photo of ${NAME}`} width="96" height="96" />
+      <div>
+        <h1 class="p-name">{NAME}</h1>
+        <p class="small">
+          <a class="u-url u-uid" rel="me" href={`${SITE_URL}/`}>{DOMAIN}</a>
+        </p>
+      </div>
+    </div>
+
+    <p class="p-note bio">{BIO}</p>
+
+    <h2>Elsewhere</h2>
+    <ul class="links">
+      {
+        PROFILE_LINKS.map((link) => (
+          <li>
+            <a rel="me" href={link.href}>{link.label}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <h2>Short links</h2>
+  <ul class="links">
+    <li><a href="/photos/">{DOMAIN}/photos</a> <span class="muted small">— my photos</span></li>
+    <li><a href="/books/">{DOMAIN}/books</a> <span class="muted small">— what I read</span></li>
+  </ul>
+
+  <h2>Writing</h2>
+  {
+    recent.length === 0 ? (
+      <p class="muted">No posts yet.</p>
+    ) : (
+      <ul class="post-list">
+        {recent.map((post) => (
+          <li>
+            <h3><a href={postPath(post)}>{postLabel(post)}</a></h3>
+            <time datetime={machineDate(post.data.pubDate)}>
+              {readableDate(post.data.pubDate)}
+            </time>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+  <p><a href="/blog/">All posts</a> · <a href="/rss.xml">RSS feed</a></p>
+</BaseLayout>

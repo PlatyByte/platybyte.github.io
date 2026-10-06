@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://platybyte.net/sitemap-index.xml

@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+# Check that the build output carries the markup Mastodon and Bridgy Fed read.
+# Run `npm run build` first. The script exits non-zero on the first failure.
+set -euo pipefail
+
+DIST=dist
+POST=$DIST/blog/hello-world/index.html
+NOTE=$DIST/blog/a-short-note/index.html
+fail=0
+
+check() {
+  local label=$1 file=$2 pattern=$3
+  if grep -q -- "$pattern" "$file"; then
+    printf 'ok    %s\n' "$label"
+  else
+    printf 'FAIL  %s  (%s in %s)\n' "$label" "$pattern" "$file"
+    fail=1
+  fi
+}
+
+absent() {
+  local label=$1 path=$2
+  if [ -e "$path" ]; then
+    printf 'FAIL  %s  (%s exists and must not)\n' "$label" "$path"
+    fail=1
+  else
+    printf 'ok    %s\n' "$label"
+  fi
+}
+
+[ -d "$DIST" ] || { echo "No $DIST directory. Run: npm run build"; exit 1; }
+
+echo '-- head of the homepage'
+check 'rel=me links present' "$DIST/index.html" 'rel="me" href='
+printf '      rel=me links in the whole page: %s (4 in <head>, 4 visible, 1 self)\n' \
+  "$(grep -o 'rel="me" href=' "$DIST/index.html" | wc -l)"
+check 'rel=me link elements in head' "$DIST/index.html" '<link rel="me" href='
+check 'rss alternate link'        "$DIST/index.html" '<link rel="alternate" type="application/rss+xml"'
+check 'canonical link'            "$DIST/index.html" '<link rel="canonical"'
+
+echo '-- h-card on the homepage'
+check 'h-card wrapper' "$DIST/index.html" 'class="h-card"'
+check 'p-name'         "$DIST/index.html" 'class="p-name"'
+check 'u-url'          "$DIST/index.html" 'u-url'
+check 'u-photo'        "$DIST/index.html" 'u-photo'
+check 'p-note'         "$DIST/index.html" 'p-note'
+
+echo '-- h-entry on a titled post'
+check 'h-entry wrapper'  "$POST" 'class="h-entry"'
+check 'p-name title'     "$POST" 'class="p-name"'
+check 'dt-published'     "$POST" 'class="dt-published"'
+check 'absolute u-url'   "$POST" 'class="u-url" href="https://platybyte.net/blog/'
+check 'e-content'        "$POST" 'class="e-content"'
+check 'p-author h-card'  "$POST" 'class="p-author h-card"'
+
+echo '-- h-entry on a note, which has no title'
+check 'h-entry wrapper' "$NOTE" 'class="h-entry"'
+check 'dt-published'    "$NOTE" 'class="dt-published"'
+check 'e-content'       "$NOTE" 'class="e-content"'
+check 'p-author h-card' "$NOTE" 'class="p-author h-card"'
+
+echo '-- feed'
+check 'full content in the feed' "$DIST/rss.xml" '<content:encoded>'
+check 'absolute item link'       "$DIST/rss.xml" '<link>https://platybyte.net/blog/'
+
+echo '-- deployment files'
+check 'CNAME holds the domain'   "$DIST/CNAME" 'platybyte.net'
+check 'robots points to sitemap' "$DIST/robots.txt" 'Sitemap: https://platybyte.net/sitemap-index.xml'
+check 'sitemap exists'           "$DIST/sitemap-index.xml" 'sitemap'
+
+echo '-- short links'
+check '/photos redirect page' "$DIST/photos/index.html" 'http-equiv="refresh"'
+check '/books redirect page'  "$DIST/books/index.html"  'http-equiv="refresh"'
+
+echo '-- paths that must stay unused for Bridgy Fed'
+absent 'no webfinger file'  "$DIST/.well-known/webfinger"
+absent 'no host-meta file'  "$DIST/.well-known/host-meta"
+
+echo '-- remaining placeholders'
+if grep -rliE 'TODO' "$DIST" >/dev/null 2>&1; then
+  echo 'note  the build still contains TODO placeholders:'
+  grep -rloiE 'TODO' "$DIST" | sed 's/^/        /'
+else
+  echo 'ok    no TODO placeholders left in the build'
+fi
+
+echo
+if [ "$fail" -eq 0 ]; then
+  echo 'All checks passed.'
+else
+  echo 'Some checks failed.'
+  exit 1
+fi

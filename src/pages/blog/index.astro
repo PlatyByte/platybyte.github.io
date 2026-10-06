@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import {
+  allPosts,
+  postPath,
+  postLabel,
+  excerpt,
+  readableDate,
+  machineDate,
+} from '../../posts';
+
+const posts = await allPosts();
+---
+
+<BaseLayout title="Blog" description="Posts and notes.">
+  <h1>Blog</h1>
+
+  {
+    posts.length === 0 ? (
+      <p class="muted">No posts yet.</p>
+    ) : (
+      <ul class="post-list">
+        {posts.map((post) => (
+          <li>
+            <h3><a href={postPath(post)}>{postLabel(post)}</a></h3>
+            <time datetime={machineDate(post.data.pubDate)}>
+              {readableDate(post.data.pubDate)}
+            </time>
+            {post.data.title && <p class="muted">{excerpt(post)}</p>}
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
+  <p><a href="/rss.xml">RSS feed</a></p>
+</BaseLayout>

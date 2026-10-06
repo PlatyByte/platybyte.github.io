@@ -1,0 +1,72 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { NAME, SITE_URL } from '../../site';
+import {
+  allPosts,
+  postPath,
+  postLabel,
+  excerpt,
+  readableDate,
+  machineDate,
+  type Post,
+} from '../../posts';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const posts = await allPosts();
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+};
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+// The permalink is absolute and stable. Bridgy Fed and every webmention
+// receiver use it as the identity of the post, so it must not change.
+const permalink = new URL(postPath(post), SITE_URL).href;
+const authorUrl = `${SITE_URL}/`;
+---
+
+<BaseLayout title={postLabel(post)} description={excerpt(post)}>
+  <article class="h-entry">
+    <header>
+      {post.data.title && <h1 class="p-name">{post.data.title}</h1>}
+
+      <p class="small">
+        <time class="dt-published" datetime={machineDate(post.data.pubDate)}>
+          {readableDate(post.data.pubDate)}
+        </time>
+        {
+          post.data.updatedDate && (
+            <>
+              {' · updated '}
+              <time class="dt-updated" datetime={machineDate(post.data.updatedDate)}>
+                {readableDate(post.data.updatedDate)}
+              </time>
+            </>
+          )
+        }
+        {' · '}
+        <a class="u-url" href={permalink}>Permalink</a>
+      </p>
+
+      <p class="p-author h-card">
+        By <a class="p-name u-url" rel="author" href={authorUrl}>{NAME}</a>
+      </p>
+    </header>
+
+    <div class="e-content">
+      <Content />
+    </div>
+  </article>
+
+  <hr />
+  <p><a href="/blog/">All posts</a></p>
+</BaseLayout>

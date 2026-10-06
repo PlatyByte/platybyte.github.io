@@ -1,0 +1,92 @@
+---
+import '../styles/global.css';
+import {
+  LANG,
+  NAME,
+  SITE_TITLE,
+  SITE_DESCRIPTION,
+  PROFILE_LINKS,
+  WEBMENTION_ENDPOINT,
+} from '../site';
+
+interface Props {
+  /** The page title, without the site name. */
+  title?: string;
+  /** The meta description for this page. */
+  description?: string;
+}
+
+const { title, description = SITE_DESCRIPTION } = Astro.props;
+
+const pageTitle = title ? `${title} — ${SITE_TITLE}` : SITE_TITLE;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const year = new Date().getUTCFullYear();
+---
+
+<!doctype html>
+<html lang={LANG}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- The feed. Bridgy Fed discovers the site through this element. -->
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${SITE_TITLE} — blog`}
+      href="/rss.xml"
+    />
+
+    <!-- rel="me" links, one for each profile. Server rendered, so that
+         Mastodon can read them without running JavaScript. -->
+    {PROFILE_LINKS.map((link) => <link rel="me" href={link.href} />)}
+
+    {
+      WEBMENTION_ENDPOINT ? (
+        <link rel="webmention" href={WEBMENTION_ENDPOINT} />
+      ) : (
+        <Fragment
+          set:html={
+            '<!-- TODO webmention: set WEBMENTION_ENDPOINT in src/site.ts to a ' +
+            'webmention endpoint, for example the one webmention.io gives you. ' +
+            'Until then this site sends no webmentions and receives none, so ' +
+            'fediverse replies do not appear here. -->'
+          }
+        />
+      )
+    }
+
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <div class="wrap">
+      <header class="site-header">
+        <nav aria-label="Main">
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="/rss.xml">Feed</a></li>
+          </ul>
+        </nav>
+      </header>
+
+      <main id="main">
+        <slot />
+      </main>
+
+      <footer class="site-footer">
+        <p>
+          {NAME} · {year} ·
+          <a href="/rss.xml">RSS</a>
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>
