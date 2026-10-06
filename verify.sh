@@ -32,7 +32,7 @@ absent() {
 
 echo '-- head of the homepage'
 check 'rel=me links present' "$DIST/index.html" 'rel="me" href='
-printf '      rel=me links in the whole page: %s (4 in <head>, 4 visible, 1 self)\n' \
+printf '      rel=me links in the whole page: %s (3 in <head>, 3 visible, 1 self)\n' \
   "$(grep -o 'rel="me" href=' "$DIST/index.html" | wc -l)"
 check 'rel=me link elements in head' "$DIST/index.html" '<link rel="me" href='
 check 'rss alternate link'        "$DIST/index.html" '<link rel="alternate" type="application/rss+xml"'

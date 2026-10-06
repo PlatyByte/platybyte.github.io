@@ -23,23 +23,18 @@ export const AVATAR = '/avatar.jpg';
 
 /**
  * Profile URLs used for rel="me" links and for the two short redirects.
- * The `.invalid` hosts below never resolve. They are placeholders on purpose,
- * so that nothing points at a wrong real account before you fill them in.
+ *
+ * There is no Mastodon entry, because there is no Mastodon account. To add
+ * one later, put the URL here and add a line to PROFILE_LINKS below.
  */
 export const PROFILES = {
-  /** TODO: replace with your real Mastodon profile URL. */
-  mastodon: 'https://TODO-mastodon-instance.invalid/@TODO-you',
-  /** TODO: replace with your real Vernissage profile URL. */
-  vernissage: 'https://TODO-vernissage-instance.invalid/@TODO-you',
-  /** TODO: replace with your real BookWyrm profile URL. */
-  bookwyrm: 'https://TODO-bookwyrm-instance.invalid/user/TODO-you',
-  /** The GitHub profile. */
+  vernissage: 'https://vernissage.photos/@platybyte',
+  bookwyrm: 'https://bookwyrm.social/user/platybyte',
   github: 'https://github.com/PlatyByte',
 } as const;
 
 /** The order of the visible profile links and of the rel="me" links. */
 export const PROFILE_LINKS = [
-  { key: 'mastodon', label: 'Mastodon', href: PROFILES.mastodon },
   { key: 'vernissage', label: 'Vernissage (photos)', href: PROFILES.vernissage },
   { key: 'bookwyrm', label: 'BookWyrm (books)', href: PROFILES.bookwyrm },
   { key: 'github', label: 'GitHub', href: PROFILES.github },

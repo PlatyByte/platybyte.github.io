@@ -40,8 +40,10 @@ const year = new Date().getUTCFullYear();
       href="/rss.xml"
     />
 
-    <!-- rel="me" links, one for each profile. Server rendered, so that
-         Mastodon can read them without running JavaScript. -->
+    <!-- rel="me" links, one for each profile. Server rendered, because a
+         verifier does not run JavaScript. No platform listed here verifies
+         a domain today. The links still identify the site to Bridgy Fed and
+         stay ready for a service that does verify. -->
     {PROFILE_LINKS.map((link) => <link rel="me" href={link.href} />)}
 
     {

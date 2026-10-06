@@ -9,9 +9,7 @@ The blog lives under `/blog/`.
 ## Before you push
 
 Open `src/site.ts` and replace every value that contains the word `TODO`.
-That file holds the display name, the bio, and the four profile URLs. The
-profile URLs use reserved `.invalid` host names until you replace them, so
-no link points at a wrong real account by accident.
+Two are left: `NAME` and `BIO`. The three profile URLs are already set.
 
 Add your avatar at `public/avatar.jpg`. The homepage `h-card` reads it.
 
@@ -103,6 +101,50 @@ These are paths on your own domain, not subdomains. A `CNAME` record for
 because that server does not know the host name and holds no TLS certificate
 for it, so the browser would report a certificate error before the page
 loaded.
+
+## Deployment status
+
+This repository is `PlatyByte/platybyte.github.io`, and it already serves
+another site. Read this before you change any Pages setting.
+
+The Pages configuration today is a legacy branch build. It serves the branch
+`simple-html` at the custom domain `blog.platybyte.net`, with a certificate
+that expires on 2026-11-26. The branch `master` holds an older mkdocs site.
+The default branch is `master`.
+
+The workflow in this repository runs on a push to `main`. The build job
+passes: it installs, builds and uploads `dist/` as the Pages artifact. The
+deploy job stops with this message:
+
+```
+Branch "main" is not allowed to deploy to github-pages due to environment
+protection rules.
+```
+
+The `github-pages` environment allows a deployment only from the default
+branch and from the branch that Pages is configured to serve. That rule is
+what protects the live `blog.platybyte.net` site right now.
+
+One repository serves one Pages site with one custom domain. To put this
+Astro site on the apex domain `platybyte.net` from this repository, you give
+up `blog.platybyte.net`. The steps, in order, and each one is deliberate:
+
+1. Decide what happens to `blog.platybyte.net`. The old content lives on the
+   branches `simple-html` and `master`, so nothing is lost, but the address
+   stops resolving to a site.
+2. In Settings, then Pages, set Source to GitHub Actions. This ends the
+   legacy branch build.
+3. In Settings, then Environments, open `github-pages` and add `main` to the
+   allowed deployment branches. Alternatively, make `main` the default
+   branch, which allows it without an extra rule.
+4. Add the DNS records for the apex, listed in the checklist below.
+5. Re-run the workflow. The first successful deploy reads `public/CNAME`
+   from the artifact and sets the custom domain to `platybyte.net`. The
+   certificate for `blog.platybyte.net` stops applying at that moment.
+6. Wait for the new certificate, then turn on "Enforce HTTPS".
+
+If you want to keep `blog.platybyte.net` as it is, put this Astro site in a
+second repository instead and point the apex domain at that one.
 
 ## Microformats and the feed
 
