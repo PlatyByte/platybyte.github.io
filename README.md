@@ -104,17 +104,16 @@ loaded.
 
 ## Deployment status
 
-This repository is `PlatyByte/platybyte.github.io`, and it already serves
-another site. Read this before you change any Pages setting.
+This repository is `PlatyByte/platybyte.github.io`. It already serves another
+site, so the switch to the apex domain takes a few deliberate steps.
 
 The Pages configuration today is a legacy branch build. It serves the branch
-`simple-html` at the custom domain `blog.platybyte.net`, with a certificate
-that expires on 2026-11-26. The branch `master` holds an older mkdocs site.
-The default branch is `master`.
+`simple-html` at `blog.platybyte.net`, with a certificate that expires on
+2026-11-26. The branch `master` holds an older mkdocs site. The default
+branch is `master`.
 
 The workflow in this repository runs on a push to `main`. The build job
-passes: it installs, builds and uploads `dist/` as the Pages artifact. The
-deploy job stops with this message:
+passes. The deploy job stops with this message:
 
 ```
 Branch "main" is not allowed to deploy to github-pages due to environment
@@ -123,28 +122,52 @@ protection rules.
 
 The `github-pages` environment allows a deployment only from the default
 branch and from the branch that Pages is configured to serve. That rule is
-what protects the live `blog.platybyte.net` site right now.
+what protects the live site right now.
 
-One repository serves one Pages site with one custom domain. To put this
-Astro site on the apex domain `platybyte.net` from this repository, you give
-up `blog.platybyte.net`. The steps, in order, and each one is deliberate:
+One repository serves one Pages site with one custom domain. Moving to the
+apex domain `platybyte.net` therefore ends `blog.platybyte.net`. The artwork
+that site shows is already part of this site, at `/platybyte.jpg`, so the
+picture survives the move even though that address does not.
 
-1. Decide what happens to `blog.platybyte.net`. The old content lives on the
-   branches `simple-html` and `master`, so nothing is lost, but the address
-   stops resolving to a site.
-2. In Settings, then Pages, set Source to GitHub Actions. This ends the
-   legacy branch build.
-3. In Settings, then Environments, open `github-pages` and add `main` to the
-   allowed deployment branches. Alternatively, make `main` the default
-   branch, which allows it without an extra rule.
-4. Add the DNS records for the apex, listed in the checklist below.
-5. Re-run the workflow. The first successful deploy reads `public/CNAME`
-   from the artifact and sets the custom domain to `platybyte.net`. The
-   certificate for `blog.platybyte.net` stops applying at that moment.
-6. Wait for the new certificate, then turn on "Enforce HTTPS".
+### The switch, in order
 
-If you want to keep `blog.platybyte.net` as it is, put this Astro site in a
-second repository instead and point the apex domain at that one.
+1. Add the DNS records for the apex at your registrar, listed further down.
+   Do this first. The certificate request later needs them in place.
+2. Open Settings, then Pages, and set Source to GitHub Actions. This ends
+   the legacy branch build and `blog.platybyte.net` stops serving a site.
+3. Open Settings, then Branches, and set the default branch to `main`. The
+   `github-pages` environment allows the default branch, so this one change
+   also clears the rule that rejected the deploy. If you keep `master` as
+   the default, open Settings, then Environments, then `github-pages`, and
+   add `main` to the allowed deployment branches instead.
+4. Open the Actions tab, pick the last run of "Deploy to GitHub Pages", and
+   press "Re-run all jobs". The `workflow_dispatch` trigger also works.
+5. The deploy reads `public/CNAME` from the artifact and sets the custom
+   domain to `platybyte.net`. Wait for the certificate, then turn on
+   "Enforce HTTPS" in Settings, then Pages.
+6. Open Settings on your account, then Pages, and verify `platybyte.net` as
+   a verified domain. This stops another account from claiming it.
+
+The branches `simple-html`, `master` and `gh-pages` keep their content
+through all of this. Nothing is deleted.
+
+## The artwork and the theme
+
+The PlatyByte artwork is the same picture that `blog.platybyte.net` served.
+It appears here in three sizes, all cut from the same 1024px original:
+
+- `public/platybyte.jpg` is the original, byte for byte. The avatar links
+  to it.
+- `public/avatar.jpg` is a 384px crop of the head, shown in the `h-card`.
+- `public/favicon-32.png` and `public/apple-touch-icon.png` are the icons,
+  cut from the same crop.
+
+The palette in `src/styles/global.css` is sampled from that picture. The
+sunset haze gives the light background, the darkest fur gives the light
+text, the deep water teal gives the light link colour and the dark
+background, and the cyan robot eye gives the dark link colour. Every pair
+was measured against the WCAG AA ratio of 4.5:1 and passes. The comment at
+the top of the stylesheet lists each source colour.
 
 ## Microformats and the feed
 

@@ -7,6 +7,7 @@ import {
   SITE_DESCRIPTION,
   PROFILE_LINKS,
   WEBMENTION_ENDPOINT,
+  ARTWORK,
 } from '../site';
 
 interface Props {
@@ -31,6 +32,13 @@ const year = new Date().getUTCFullYear();
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+
+    <!-- Icons and the browser chrome colour, both from the PlatyByte
+         artwork and the palette derived from it. -->
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#f7f0e2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#101816" media="(prefers-color-scheme: dark)" />
 
     <!-- The feed. Bridgy Fed discovers the site through this element. -->
     <link
@@ -65,6 +73,8 @@ const year = new Date().getUTCFullYear();
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL(ARTWORK, Astro.site).href} />
+    <meta name="twitter:card" content="summary" />
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
@@ -84,10 +94,7 @@ const year = new Date().getUTCFullYear();
       </main>
 
       <footer class="site-footer">
-        <p>
-          {NAME} · {year} ·
-          <a href="/rss.xml">RSS</a>
-        </p>
+        <p>{NAME} · {year} · <a href="/rss.xml">RSS</a></p>
       </footer>
     </div>
   </body>

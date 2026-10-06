@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { NAME, BIO, AVATAR, SITE_URL, DOMAIN, PROFILE_LINKS } from '../site';
+import { NAME, BIO, AVATAR, ARTWORK, SITE_URL, DOMAIN, PROFILE_LINKS } from '../site';
 import { allPosts, postPath, postLabel, readableDate, machineDate } from '../posts';
 
 const recent = (await allPosts()).slice(0, 5);
@@ -12,7 +12,15 @@ const recent = (await allPosts()).slice(0, 5);
        marks the card as the one that represents this page. -->
   <div class="h-card">
     <div class="card-head">
-      <img class="u-photo avatar" src={AVATAR} alt={`Photo of ${NAME}`} width="96" height="96" />
+      <a class="avatar-link" href={ARTWORK} title="The full picture">
+        <img
+          class="u-photo avatar"
+          src={AVATAR}
+          alt="A cybernetic platypus held in a robot hand, at sunset over a city river"
+          width="112"
+          height="112"
+        />
+      </a>
       <div>
         <h1 class="p-name">{NAME}</h1>
         <p class="small">

@@ -18,8 +18,13 @@ export const NAME = 'TODO Your Name';
 /** TODO: replace with your one-line bio. */
 export const BIO = 'TODO short bio: one sentence about who you are.';
 
-/** The avatar file you add at public/avatar.jpg. */
+/**
+ * The avatar, a 384px copy of the PlatyByte artwork.
+ * ARTWORK is the full 1024px original, the same file that GitHub Pages
+ * served at blog.platybyte.net. The avatar links to it.
+ */
 export const AVATAR = '/avatar.jpg';
+export const ARTWORK = '/platybyte.jpg';
 
 /**
  * Profile URLs used for rel="me" links and for the two short redirects.
