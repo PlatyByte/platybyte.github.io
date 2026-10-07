@@ -75,17 +75,6 @@ The `pubDate` field is required. The `title`, `description` and `updatedDate`
 fields are optional. The build fails if the frontmatter does not match the
 schema in `src/content.config.ts`.
 
-## How to delete the sample posts
-
-Two sample posts ship with this repository. Delete both files:
-
-```sh
-rm src/data/blog/hello-world.md src/data/blog/a-short-note.md
-```
-
-The blog index, the homepage and the feed update on the next build. No other
-file refers to them.
-
 ## Short links
 
 `platybyte.net/photos` and `platybyte.net/books` send a visitor to your
@@ -279,6 +268,35 @@ Contrast against the page, measured: text 15.4:1, muted text 7.0:1, links
 WCAG AA and most clears AAA. Every glow is a shadow only. No glow carries
 meaning and no body text depends on one, so the page still reads correctly
 with text shadows disabled.
+
+## Profiles and verification
+
+`PROFILE_LINKS` in `src/site.ts` drives four `rel="me"` links in the `<head>`
+and the same four as visible links on the homepage. A fifth `rel="me"` points
+at the site itself, which is what marks the `h-card` as the one that
+represents the page. All of it is server rendered, because a verifier does not
+run JavaScript.
+
+Only Mastodon verifies the domain back. It fetches the site, looks for a
+`rel="me"` link pointing at the profile, and shows a green mark next to the
+matching link field. The check runs when you save the profile, so the site
+must be live first, and it is.
+
+To turn it on, edit the profile at https://mastodon.social/@platybyte, add a
+link field with the value `https://platybyte.net`, and save.
+
+Vernissage and BookWyrm show no mark for a domain today. The links there are
+standard and cost nothing, and they are part of what identifies the site to
+Bridgy Fed. BookWyrm accepts HTML in the profile summary, so this works
+there:
+
+```html
+<a rel="me" href="https://platybyte.net">platybyte.net</a>
+```
+
+The same `rel="me"` links are what IndieAuth reads. That is how the
+webmention.io sign in works without a password, and Mastodon and GitHub are
+both providers it supports.
 
 ## Microformats and the feed
 

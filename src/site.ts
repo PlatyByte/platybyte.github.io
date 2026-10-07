@@ -32,10 +32,12 @@ export const BANNER = '/banner.jpg';
 /**
  * Profile URLs used for rel="me" links and for the two short redirects.
  *
- * There is no Mastodon entry, because there is no Mastodon account. To add
- * one later, put the URL here and add a line to PROFILE_LINKS below.
+ * Mastodon is the only one of these that verifies the domain back. It checks
+ * for a rel="me" link here pointing at the profile, and shows a green mark
+ * next to the matching link field on the profile.
  */
 export const PROFILES = {
+  mastodon: 'https://mastodon.social/@platybyte',
   vernissage: 'https://vernissage.photos/@platybyte',
   bookwyrm: 'https://bookwyrm.social/user/platybyte',
   github: 'https://github.com/PlatyByte',
@@ -43,6 +45,7 @@ export const PROFILES = {
 
 /** The order of the visible profile links and of the rel="me" links. */
 export const PROFILE_LINKS = [
+  { key: 'mastodon', label: 'Mastodon', href: PROFILES.mastodon },
   { key: 'vernissage', label: 'Vernissage (photos)', href: PROFILES.vernissage },
   { key: 'bookwyrm', label: 'BookWyrm (books)', href: PROFILES.bookwyrm },
   { key: 'github', label: 'GitHub', href: PROFILES.github },

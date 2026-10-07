@@ -30,12 +30,13 @@ absent() {
 
 echo '-- head of the homepage'
 check 'rel=me links present' "$DIST/index.html" 'rel="me" href='
-printf '      rel=me links in the whole page: %s (3 in <head>, 3 visible, 1 self)\n' \
+printf '      rel=me links in the whole page: %s (4 in <head>, 4 visible, 1 self)\n' \
   "$(grep -o 'rel="me" href=' "$DIST/index.html" | wc -l)"
 check 'rel=me link elements in head' "$DIST/index.html" '<link rel="me" href='
 check 'rss alternate link'        "$DIST/index.html" '<link rel="alternate" type="application/rss+xml"'
 check 'canonical link'            "$DIST/index.html" '<link rel="canonical"'
 check 'webmention endpoint'       "$DIST/index.html" '<link rel="webmention" href="https://webmention.io/platybyte.net/webmention"'
+check 'mastodon rel=me in head'   "$DIST/index.html" '<link rel="me" href="https://mastodon.social/@platybyte"'
 
 echo '-- h-card on the homepage'
 check 'h-card wrapper' "$DIST/index.html" 'class="h-card"'

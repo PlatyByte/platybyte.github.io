@@ -48,9 +48,9 @@ const year = new Date().getUTCFullYear();
     />
 
     <!-- rel="me" links, one for each profile. Server rendered, because a
-         verifier does not run JavaScript. No platform listed here verifies
-         a domain today. The links still identify the site to Bridgy Fed and
-         stay ready for a service that does verify. -->
+         verifier does not run JavaScript. Mastodon reads these to verify
+         the domain. Vernissage and BookWyrm do not verify, and the links
+         are still what identifies the site to Bridgy Fed. -->
     {PROFILE_LINKS.map((link) => <link rel="me" href={link.href} />)}
 
     {
