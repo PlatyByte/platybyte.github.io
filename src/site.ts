@@ -1,6 +1,6 @@
 /**
  * Every personal value for the site lives here.
- * Replace each value that contains the word TODO.
+ * One value still contains the word TODO: WEBMENTION_ENDPOINT.
  */
 
 /** The apex domain. No www, no trailing slash. */
@@ -12,11 +12,11 @@ export const SITE_URL = `https://${DOMAIN}`;
 /** The language tag used on the <html> element. */
 export const LANG = 'en';
 
-/** TODO: replace with your display name. */
-export const NAME = 'TODO Your Name';
+/** The display name, used in the h-card, the page titles and the byline. */
+export const NAME = 'PlatyByte';
 
-/** TODO: replace with your one-line bio. */
-export const BIO = 'TODO short bio: one sentence about who you are.';
+/** One sentence, shown under the name and used as the meta description. */
+export const BIO = 'Developer. Creating his own place on the internet.';
 
 /**
  * The avatar, a 384px copy of the PlatyByte artwork.

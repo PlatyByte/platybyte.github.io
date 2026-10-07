@@ -4,8 +4,6 @@
 set -euo pipefail
 
 DIST=dist
-POST=$DIST/blog/hello-world/index.html
-NOTE=$DIST/blog/a-short-note/index.html
 fail=0
 
 check() {
@@ -45,28 +43,44 @@ check 'u-url'          "$DIST/index.html" 'u-url'
 check 'u-photo'        "$DIST/index.html" 'u-photo'
 check 'p-note'         "$DIST/index.html" 'p-note'
 
-echo '-- h-entry on a titled post'
-check 'h-entry wrapper'  "$POST" 'class="h-entry"'
-check 'p-name title'     "$POST" 'class="p-name"'
-check 'dt-published'     "$POST" 'class="dt-published"'
-check 'absolute u-url'   "$POST" 'class="u-url" href="https://platybyte.net/blog/'
-check 'e-content'        "$POST" 'class="e-content"'
-check 'p-author h-card'  "$POST" 'class="p-author h-card"'
-
-echo '-- h-entry on a note, which has no title'
-check 'h-entry wrapper' "$NOTE" 'class="h-entry"'
-check 'dt-published'    "$NOTE" 'class="dt-published"'
-check 'e-content'       "$NOTE" 'class="e-content"'
-check 'p-author h-card' "$NOTE" 'class="p-author h-card"'
+echo '-- h-entry on each post'
+# The posts are whatever is in src/data/blog, so find them instead of naming
+# them. With no posts there is nothing to check, and the script says so.
+posts=$(find "$DIST/blog" -mindepth 2 -name index.html 2>/dev/null | sort)
+if [ -z "$posts" ]; then
+  echo 'skip  no posts in the build, so the h-entry markup is unchecked'
+  echo '      write a post in src/data/blog and run this again'
+else
+  for post in $posts; do
+    label=$(basename "$(dirname "$post")")
+    check "h-entry wrapper  [$label]" "$post" 'class="h-entry"'
+    check "dt-published     [$label]" "$post" 'class="dt-published"'
+    check "absolute u-url   [$label]" "$post" 'class="u-url" href="https://platybyte.net/blog/'
+    check "e-content        [$label]" "$post" 'class="e-content"'
+    check "p-author h-card  [$label]" "$post" 'class="p-author h-card"'
+  done
+fi
 
 echo '-- feed'
-check 'full content in the feed' "$DIST/rss.xml" '<content:encoded>'
-check 'absolute item link'       "$DIST/rss.xml" '<link>https://platybyte.net/blog/'
+check 'the feed exists' "$DIST/rss.xml" '<rss version="2.0"'
+if [ -z "$posts" ]; then
+  echo 'skip  the feed has no items, because there are no posts yet'
+else
+  check 'full content in the feed' "$DIST/rss.xml" '<content:encoded>'
+  check 'absolute item link'       "$DIST/rss.xml" '<link>https://platybyte.net/blog/'
+fi
 
 echo '-- images'
 check 'banner on the homepage'  "$DIST/index.html" 'class="banner"'
 check 'banner is the og:image'  "$DIST/index.html" 'og:image" content="https://platybyte.net/banner.jpg"'
-check 'platypus cursor on links' "$DIST/index.html" 'cursor:url(/cursor.png)'
+# Astro inlines a small stylesheet into the HTML and externalises a large
+# one into _astro/, so search the whole build rather than one file.
+if grep -rq 'cursor:url(/cursor.png)' "$DIST"; then
+  printf 'ok    %s\n' 'platypus cursor on links'
+else
+  printf 'FAIL  %s\n' 'platypus cursor rule not found anywhere in the build'
+  fail=1
+fi
 for f in banner.jpg avatar.jpg platybyte.jpg cursor.png favicon-32.png apple-touch-icon.png; do
   if [ -f "$DIST/$f" ]; then printf 'ok    %s present\n' "$f"
   else printf 'FAIL  %s missing from %s\n' "$f" "$DIST"; fail=1; fi

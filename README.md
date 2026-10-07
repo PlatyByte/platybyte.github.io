@@ -8,10 +8,9 @@ The blog lives under `/blog/`.
 
 ## Before you push
 
-Open `src/site.ts` and replace every value that contains the word `TODO`.
-Two are left: `NAME` and `BIO`. The three profile URLs are already set.
-
-Add your avatar at `public/avatar.jpg`. The homepage `h-card` reads it.
+`src/site.ts` holds every personal value. The name, the bio and the three
+profile URLs are set. One `TODO` is left, `WEBMENTION_ENDPOINT`, and it stays
+null until you have an endpoint.
 
 ## Local commands
 
@@ -257,20 +256,29 @@ files are committed, so a deploy never runs it.
 
 ### The palette
 
-`src/styles/global.css` samples the banner. The deep indigo sky becomes the
-dark background, the violet mountains the dark card, the neon cyan grid the
-dark link colour, the neon magenta grid the dark hover, and the sun the dark
-focus ring. Light mode keeps the same hues and inverts the roles: a pale
-lavender page, deep indigo text, a magenta link and a deep teal hover.
+The site is dark only, on purpose. `src/styles/global.css` defines one
+palette and there is no `prefers-color-scheme: light` block. A neon 1990s
+look with a hint of Far Cry Blood Dragon has no light register, and a
+half-hearted light mode reads worse than none. To bring one back, add the
+media query and redefine the custom properties inside it.
 
-Dark is the native register for this palette. Light mode exists so the site
-stays readable on paper and in bright sun, without pretending a neon grid
-belongs on a white page.
+The hues come from the banner and are then pushed harder. The sky darkens
+almost to black at `#06040d`, the neon cyan grid becomes the link colour at
+`#22e7ff`, the neon magenta grid becomes the hover and the glow at
+`#ff2d95`, headings take a softer magenta at `#ff4fa8`, and the focus ring
+takes a warning amber at `#ffcf3a` so it stays distinct from both link
+states.
 
-Every text pair was measured against its own background. The lowest ratio is
-5.17:1 and most are above 7:1, so all of it clears WCAG AA and most clears
-AAA. The comment at the top of the stylesheet lists each sampled colour next
-to the role it fills.
+The 1990s cues are a monospace stack for headings, the navigation and the
+dates, set in uppercase with wide letter spacing; a magenta glow on the
+headings; scanlines over the banner; and a cyan to magenta gradient for the
+horizontal rule.
+
+Contrast against the page, measured: text 15.4:1, muted text 7.0:1, links
+13.5:1, hover 5.9:1, headings 6.7:1, focus ring 13.8:1. All of it clears
+WCAG AA and most clears AAA. Every glow is a shadow only. No glow carries
+meaning and no body text depends on one, so the page still reads correctly
+with text shadows disabled.
 
 ## Microformats and the feed
 

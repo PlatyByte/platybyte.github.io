@@ -7,14 +7,16 @@ const recent = (await allPosts()).slice(0, 5);
 ---
 
 <BaseLayout>
-  <img
-    class="banner"
-    src={BANNER}
-    alt="A synthwave sunset: a striped sun over purple mountains, mirrored in water above a neon grid"
-    width="1536"
-    height="1024"
-    fetchpriority="high"
-  />
+  <div class="banner-frame">
+    <img
+      class="banner"
+      src={BANNER}
+      alt="A synthwave sunset: a striped sun over purple mountains, mirrored in water above a neon grid"
+      width="1536"
+      height="1024"
+      fetchpriority="high"
+    />
+  </div>
 
   <!-- The representative h-card. Bridgy Fed reads p-name, u-url, u-photo
        and p-note from this block. The u-url also carries rel="me", which

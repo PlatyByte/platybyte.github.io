@@ -1,53 +1,47 @@
 /*
- * The palette comes from public/banner.jpg, the synthwave sunset banner.
- * Every value below was sampled from that image, then adjusted until it
- * passed the WCAG AA contrast ratio of 4.5:1 against its own background.
+ * Dark only, on purpose. The brief asked for a neon 1990s look with a hint
+ * of Far Cry Blood Dragon, and that look has no light register. There is no
+ * `prefers-color-scheme: light` block. To bring one back, add the block and
+ * redefine the custom properties below inside it.
  *
- * Sampled source colours:
- *   #37235b  deep indigo sky     -> dark background, light rule
- *   #4c2d6f  violet mountains    -> dark card, light muted text
- *   #c7518a  magenta cloud       -> light link
- *   #e661af  neon magenta grid   -> dark hover
- *   #47a1ca  neon cyan grid      -> dark link, brightened to clear 4.5:1
- *   #ffa75c  the sun             -> dark focus ring
- *   #e86f7a  coral haze          -> light focus ring, warmed
+ * Hues are sampled from public/banner.jpg and then pushed: the sky darkens
+ * almost to black, the neon grid lines go full strength.
  *
- * Dark is the native register for this palette. Light mode keeps the same
- * hues but inverts the roles, so the site stays readable on paper and in
- * bright sun without pretending a neon grid belongs on a white page.
+ *   #06040d  near black, violet cast   -> page
+ *   #0f0a1c  violet ink                -> cards and code
+ *   #22e7ff  neon cyan grid            -> links
+ *   #ff2d95  neon magenta grid         -> hover, glow, selection
+ *   #ff4fa8  softer magenta            -> headings
+ *   #ffcf3a  warning amber             -> focus ring
+ *   #ff8a3d  the sun                   -> rare warm accent
+ *
+ * Contrast against the page, measured: text 15.4:1, muted 7.0:1, links
+ * 13.5:1, hover 5.9:1, headings 6.7:1, focus 13.8:1. All clear WCAG AA.
+ * The glows are shadows only. No glow carries meaning, and no body text
+ * relies on one, so the page still reads with shadows turned off.
  */
 
 :root {
-  --bg: #f6f2fb;
-  --fg: #241540;
-  --muted: #5d4a78;
-  --accent: #8a1f6b;
-  --accent-hover: #0d5a6e;
-  --rule: #ddd2ec;
-  --card: #ebe3f6;
-  --focus: #b4400f;
-  --shadow: rgba(36, 21, 64, 0.14);
-  --glow: none;
+  --bg: #06040d;
+  --fg: #e4dcf7;
+  --muted: #9d90c7;
+  --accent: #22e7ff;
+  --accent-hover: #ff2d95;
+  --heading: #ff4fa8;
+  --focus: #ffcf3a;
+  --sun: #ff8a3d;
+  --rule: #2a1a4d;
+  --card: #0f0a1c;
+
+  --glow-cyan: 0 0 12px rgba(34, 231, 255, 0.45);
+  --glow-magenta: 0 0 16px rgba(255, 45, 149, 0.45);
+
   --measure: 38rem;
   --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
     Arial, sans-serif;
-  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-  color-scheme: light dark;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #1a1033;
-    --fg: #ece4f7;
-    --muted: #a99ac4;
-    --accent: #4fe3e8;
-    --accent-hover: #ff7ab8;
-    --rule: #3a2a5e;
-    --card: #241642;
-    --focus: #ffa75c;
-    --shadow: rgba(0, 0, 0, 0.55);
-    --glow: 0 0 18px rgba(79, 227, 232, 0.28);
-  }
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+  color-scheme: dark;
 }
 
 *,
@@ -63,11 +57,24 @@ html {
 body {
   margin: 0;
   padding: 2rem 1.25rem 4rem;
-  background: var(--bg);
   color: var(--fg);
   font-family: var(--font);
   font-size: 1.0625rem;
   line-height: 1.65;
+  background-color: var(--bg);
+  /* A magenta horizon glow at the top and a cyan one low down, the way the
+     banner lights its sky and its water. Fixed, so it does not scroll. */
+  background-image:
+    radial-gradient(60rem 26rem at 50% -8%, rgba(255, 45, 149, 0.22), transparent 70%),
+    radial-gradient(50rem 24rem at 50% 108%, rgba(34, 231, 255, 0.12), transparent 70%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+}
+
+::selection {
+  background: var(--accent-hover);
+  color: #0a0612;
 }
 
 .wrap {
@@ -78,39 +85,51 @@ body {
 a {
   color: var(--accent);
   text-decoration-thickness: 1px;
-  text-underline-offset: 0.15em;
+  text-underline-offset: 0.18em;
   /* The platypus bill, the same cursor the old one-page site used over its
      link. The hotspot 0 0 is the bill tip at the top left of the image.
      `pointer` is the fallback if the image fails to load. */
   cursor: url("/cursor.png") 0 0, pointer;
+  transition: color 120ms linear, text-shadow 120ms linear;
 }
 
 a:hover,
 a:focus-visible {
   color: var(--accent-hover);
+  text-shadow: var(--glow-magenta);
 }
 
 :focus-visible {
   outline: 3px solid var(--focus);
-  outline-offset: 2px;
+  outline-offset: 3px;
   border-radius: 2px;
 }
 
 h1,
 h2,
 h3 {
-  line-height: 1.25;
+  font-family: var(--mono);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.055em;
+  color: var(--heading);
+  text-shadow: var(--glow-magenta);
+  line-height: 1.2;
   text-wrap: balance;
-  margin: 2rem 0 0.5rem;
+  margin: 2.5rem 0 0.6rem;
 }
 
 h1 {
-  font-size: 1.9rem;
+  font-size: 1.75rem;
   margin-top: 0;
 }
 
 h2 {
-  font-size: 1.35rem;
+  font-size: 1.2rem;
+}
+
+h3 {
+  font-size: 1.05rem;
 }
 
 p,
@@ -129,6 +148,7 @@ img {
 code {
   font-family: var(--mono);
   font-size: 0.9em;
+  color: var(--accent);
   background: var(--card);
   padding: 0.1em 0.35em;
   border-radius: 3px;
@@ -136,12 +156,14 @@ code {
 
 pre {
   background: var(--card);
+  border-left: 2px solid var(--accent);
   padding: 1rem;
-  border-radius: 6px;
+  border-radius: 0 6px 6px 0;
   overflow-x: auto;
 }
 
 pre code {
+  color: var(--fg);
   background: none;
   padding: 0;
 }
@@ -149,14 +171,22 @@ pre code {
 blockquote {
   margin-inline: 0;
   padding-left: 1rem;
-  border-left: 3px solid var(--accent);
+  border-left: 2px solid var(--accent-hover);
   color: var(--muted);
 }
 
 hr {
+  height: 1px;
   border: 0;
-  border-top: 1px solid var(--rule);
   margin: 2.5rem 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent) 20%,
+    var(--accent-hover) 80%,
+    transparent
+  );
+  opacity: 0.6;
 }
 
 /* Skip link, visible once it takes focus. */
@@ -176,29 +206,73 @@ hr {
 
 /* Header and footer */
 .site-header {
-  margin-bottom: 2.5rem;
+  margin-bottom: 2rem;
 }
 
 .site-header nav ul {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 1.5rem;
   list-style: none;
   margin: 0;
   padding: 0;
-  font-size: 0.95rem;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
 }
 
 .site-footer {
   margin-top: 4rem;
   padding-top: 1.25rem;
   border-top: 1px solid var(--rule);
-  font-size: 0.9rem;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
   color: var(--muted);
 }
 
 .site-footer a {
   color: var(--muted);
+}
+
+/* The banner, framed like a monitor: neon edge and faint scanlines. */
+.banner-frame {
+  position: relative;
+  margin-bottom: 2.5rem;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  box-shadow: var(--glow-magenta), 0 0 44px rgba(34, 231, 255, 0.12);
+}
+
+.banner {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 1;
+  object-fit: cover;
+  object-position: center 26%;
+  background: var(--card);
+}
+
+/* Scanlines sit above the picture only. No text is underneath. */
+.banner-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.26) 0 1px,
+    transparent 1px 3px
+  );
+  mix-blend-mode: multiply;
+}
+
+@media (max-width: 30rem) {
+  .banner {
+    aspect-ratio: 2 / 1;
+  }
 }
 
 /* The h-card on the homepage */
@@ -221,26 +295,8 @@ hr {
   border-radius: 50%;
   object-fit: cover;
   background: var(--card);
-  box-shadow: 0 2px 10px var(--shadow), var(--glow);
-}
-
-/* The banner. A wide strip of the full image, framed on the sun. */
-.banner {
-  display: block;
-  width: 100%;
-  aspect-ratio: 3 / 1;
-  object-fit: cover;
-  object-position: center 26%;
-  border-radius: 8px;
-  margin-bottom: 2rem;
-  background: var(--card);
-  box-shadow: 0 2px 14px var(--shadow);
-}
-
-@media (max-width: 30rem) {
-  .banner {
-    aspect-ratio: 2 / 1;
-  }
+  border: 2px solid var(--accent-hover);
+  box-shadow: var(--glow-magenta);
 }
 
 .card-head h1 {
@@ -248,7 +304,7 @@ hr {
 }
 
 .bio {
-  margin-top: 1rem;
+  margin-top: 1.25rem;
   font-size: 1.1rem;
 }
 
@@ -285,21 +341,23 @@ hr {
 
 .post-list h3 {
   margin: 0 0 0.25rem;
-  font-size: 1.1rem;
 }
 
 time {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--muted);
-  font-size: 0.9rem;
 }
 
 /* A single post */
 .h-entry header {
-  margin-bottom: 1.75rem;
+  margin-bottom: 2rem;
 }
 
 .h-entry .p-author {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: var(--muted);
 }
 
