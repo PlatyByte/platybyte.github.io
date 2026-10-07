@@ -364,3 +364,180 @@ time {
 .h-entry .p-author a {
   color: var(--muted);
 }
+
+/* ---------------------------------------------------------------------------
+ * The paper theme, worn by the blog. A sheet of typing paper on a dark desk,
+ * struck in Courier with a bichrome ribbon: black for the text, red for the
+ * links and the margin rule.
+ *
+ * It redefines the custom properties and adds the sheet. Everything else in
+ * this stylesheet already reads from those properties, so the rest follows.
+ *
+ * Contrast on the paper, measured: ink 12.7:1, faded ink 5.1:1, red ribbon
+ * 5.9:1, red hover 9.6:1. The margin rule is at 3.7:1 and carries no text.
+ *
+ * The text does not animate. A typewriter look is about the paper and the
+ * strike, and typing a post out letter by letter would hold a reader back
+ * from the words and break the text for anybody using a screen reader.
+ * ------------------------------------------------------------------------- */
+
+[data-theme="paper"] {
+  --desk: #120d1c;
+  --paper: #f2ece0;
+  --bg: var(--paper);
+  --fg: #2b2620;
+  --muted: #6a6254;
+  --accent: #a33124;
+  --accent-hover: #6d1f16;
+  --heading: #2b2620;
+  --focus: #a33124;
+  --rule: #cfc6b4;
+  --card: #e7e0d0;
+  --margin-rule: #c0594a;
+
+  /* No neon on paper. */
+  --glow-cyan: none;
+  --glow-magenta: none;
+
+  --font: "Courier New", Courier, ui-monospace, monospace;
+  --measure: 42rem;
+}
+
+[data-theme="paper"] body {
+  background-color: var(--desk);
+  background-image: none;
+  /* Space at the top and the bottom, so the sheet sits on the desk rather
+     than running off the edge of it. */
+  padding: 2.5rem 1rem 3.5rem;
+  color: var(--fg);
+  line-height: 1.9;
+}
+
+/* The sheet. Header, text and footer all sit on the one page, the way they
+   would if the whole thing came out of the machine together. */
+[data-theme="paper"] .wrap {
+  position: relative;
+  max-width: var(--measure);
+  background: var(--paper);
+  padding: 3.5rem 2.5rem 3rem 4.5rem;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.35),
+    0 18px 50px rgba(0, 0, 0, 0.55);
+  /* Paper fibre. Two near invisible washes, not a pattern you can name. */
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      rgba(120, 100, 70, 0.025) 0 1px,
+      transparent 1px 4px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(120, 100, 70, 0.02) 0 1px,
+      transparent 1px 3px
+    );
+}
+
+/* The red margin rule down the left, like typing paper. */
+[data-theme="paper"] .wrap::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 3.1rem;
+  width: 1px;
+  background: var(--margin-rule);
+  opacity: 0.55;
+}
+
+@media (max-width: 34rem) {
+  [data-theme="paper"] .wrap {
+    padding: 2rem 1.25rem 2.5rem 1.75rem;
+  }
+
+  [data-theme="paper"] .wrap::before {
+    display: none;
+  }
+}
+
+/* Courier is a thin face. A hair of shadow gives it the weight of a key
+   striking an inked ribbon, without blurring the letter. */
+[data-theme="paper"] .wrap {
+  text-shadow: 0 0 0.6px rgba(43, 38, 32, 0.4);
+}
+
+/* A typewriter has no bold. Emphasis came from capitals and from underlining,
+   so the headings do that instead of growing a glow. */
+[data-theme="paper"] h1,
+[data-theme="paper"] h2,
+[data-theme="paper"] h3 {
+  font-family: var(--font);
+  color: var(--heading);
+  text-shadow: none;
+  font-weight: 700;
+}
+
+[data-theme="paper"] h1 {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  border-bottom: 2px solid var(--fg);
+  padding-bottom: 0.4rem;
+  margin-bottom: 1.5rem;
+}
+
+[data-theme="paper"] h2,
+[data-theme="paper"] h3 {
+  text-transform: none;
+  letter-spacing: 0.02em;
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 1px;
+}
+
+[data-theme="paper"] .site-header nav ul,
+[data-theme="paper"] .site-footer,
+[data-theme="paper"] time {
+  font-family: var(--font);
+  color: var(--muted);
+}
+
+[data-theme="paper"] .site-header {
+  margin-bottom: 2.5rem;
+}
+
+[data-theme="paper"] .site-footer {
+  border-top: 1px dashed var(--rule);
+}
+
+[data-theme="paper"] a:hover,
+[data-theme="paper"] a:focus-visible {
+  color: var(--accent-hover);
+  text-shadow: none;
+}
+
+[data-theme="paper"] hr {
+  height: 0;
+  background: none;
+  border-top: 1px dashed var(--rule);
+  opacity: 1;
+}
+
+[data-theme="paper"] code {
+  color: var(--fg);
+  background: var(--card);
+}
+
+[data-theme="paper"] pre {
+  background: var(--card);
+  border-left: 2px solid var(--margin-rule);
+  border-radius: 0;
+}
+
+[data-theme="paper"] blockquote {
+  border-left: 2px solid var(--margin-rule);
+  font-style: italic;
+}
+
+[data-theme="paper"] ::selection {
+  background: var(--margin-rule);
+  color: var(--paper);
+}

@@ -72,6 +72,13 @@ else
   check 'absolute item link'       "$DIST/rss.xml" '<link>https://platybyte.net/blog/'
 fi
 
+echo '-- themes'
+check 'homepage wears neon'  "$DIST/index.html" 'data-theme="neon"'
+check 'blog wears paper'     "$DIST/blog/index.html" 'data-theme="paper"'
+for post in $posts; do
+  check "post wears paper    [$(basename "$(dirname "$post")")]" "$post" 'data-theme="paper"'
+done
+
 echo '-- images'
 check 'banner on the homepage'  "$DIST/index.html" 'class="banner"'
 check 'banner is the og:image'  "$DIST/index.html" 'og:image" content="https://platybyte.net/banner.jpg"'
@@ -97,8 +104,23 @@ check 'robots points to sitemap' "$DIST/robots.txt" 'Sitemap: https://platybyte.
 check 'sitemap exists'           "$DIST/sitemap-index.xml" 'sitemap'
 
 echo '-- short links'
-check '/photos redirect page' "$DIST/photos/index.html" 'http-equiv="refresh"'
-check '/books redirect page'  "$DIST/books/index.html"  'http-equiv="refresh"'
+# GitHub Pages cannot send a 301, so each short link is a page. The meta
+# refresh is what makes it work with no JavaScript. The script only hides it.
+for pair in "photos vernissage.photos" "books bookwyrm.social"; do
+  set -- $pair
+  page="$DIST/$1/index.html"
+  check "/$1 meta refresh"   "$page" 'http-equiv="refresh"'
+  check "/$1 script"         "$page" 'location.replace'
+  check "/$1 canonical"      "$page" "rel=\"canonical\" href=\"https://$2"
+  check "/$1 noindex"        "$page" 'content="noindex"'
+done
+check 'short links kept out of the sitemap' "$DIST/sitemap-0.xml" '<loc>https://platybyte.net/blog/</loc>'
+if grep -q '/photos/</loc>' "$DIST/sitemap-0.xml"; then
+  printf 'FAIL  %s\n' '/photos/ is in the sitemap and must not be'
+  fail=1
+else
+  printf 'ok    %s\n' '/photos/ absent from the sitemap'
+fi
 
 echo '-- paths that must stay unused for Bridgy Fed'
 absent 'no webfinger file'  "$DIST/.well-known/webfinger"

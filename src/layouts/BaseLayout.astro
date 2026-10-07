@@ -15,9 +15,19 @@ interface Props {
   title?: string;
   /** The meta description for this page. */
   description?: string;
+  /**
+   * Which look this page wears. `neon` is the site default. `paper` is the
+   * typewriter look the blog uses: a cream sheet on a dark desk, struck in
+   * Courier with a red ribbon for the links.
+   */
+  theme?: 'neon' | 'paper';
 }
 
-const { title, description = SITE_DESCRIPTION } = Astro.props;
+const { title, description = SITE_DESCRIPTION, theme = 'neon' } = Astro.props;
+
+// The browser chrome follows the page. The desk behind the paper sheet is a
+// shade lighter than the neon page, so the two do not read as the same black.
+const themeColor = theme === 'paper' ? '#120d1c' : '#06040d';
 
 const pageTitle = title ? `${title} — ${SITE_TITLE}` : SITE_TITLE;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
@@ -25,7 +35,7 @@ const year = new Date().getUTCFullYear();
 ---
 
 <!doctype html>
-<html lang={LANG}>
+<html lang={LANG} data-theme={theme}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -37,7 +47,7 @@ const year = new Date().getUTCFullYear();
          artwork and the palette derived from it. -->
     <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="theme-color" content="#06040d" />
+    <meta name="theme-color" content={themeColor} />
 
     <!-- The feed. Bridgy Fed discovers the site through this element. -->
     <link

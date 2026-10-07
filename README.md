@@ -77,12 +77,27 @@ schema in `src/content.config.ts`.
 
 ## Short links
 
-`platybyte.net/photos` and `platybyte.net/books` send a visitor to your
-Vernissage and BookWyrm profiles. The two targets live in the `redirects`
-block of `astro.config.mjs`, which reads them from `src/site.ts`.
+`platybyte.net/photos` and `platybyte.net/books` send a visitor to the
+Vernissage and BookWyrm profiles. Each one is a page,
+`src/pages/photos.astro` and `src/pages/books.astro`, and both use
+`src/layouts/Redirect.astro`.
 
-A static build turns each one into a small HTML page with a `meta refresh`
-tag. GitHub Pages cannot send a real 301 response.
+GitHub Pages serves files and cannot send a 301, so the redirect has to live
+inside the page. Three things do the work:
+
+- A `<meta http-equiv="refresh" content="0;url=...">` tag. This is what makes
+  the short link work with no JavaScript, and it is the real mechanism.
+- One line of script, `location.replace(...)`, which runs before the browser
+  paints. It removes the flash of a page nobody meant to read, and it keeps
+  the short link out of the history so Back returns where the visitor came
+  from.
+- A canonical link and `noindex`, so a search engine files the target rather
+  than the stepping stone.
+
+Astro's own `redirects` option builds a similar page, but it prints a line of
+unstyled text that a visitor sees for an instant. These pages do not.
+
+Both are excluded from the sitemap, because neither is a page to land on.
 
 These are paths on your own domain, not subdomains. A `CNAME` record for
 `photos.platybyte.net` pointing at a Vernissage server would not work,
@@ -268,6 +283,34 @@ Contrast against the page, measured: text 15.4:1, muted text 7.0:1, links
 WCAG AA and most clears AAA. Every glow is a shadow only. No glow carries
 meaning and no body text depends on one, so the page still reads correctly
 with text shadows disabled.
+
+## Two themes
+
+The site wears two looks, and the page picks one. `BaseLayout.astro` takes a
+`theme` prop and writes it to `data-theme` on the `<html>` element. Every rule
+in `src/styles/global.css` reads from custom properties, so a theme is mostly
+a block that redefines them.
+
+`neon` is the default and covers the homepage, the 404 page and the short
+links. It is the Blood Dragon look described above.
+
+`paper` covers the blog, both the index and every post. It is a sheet of
+typing paper on a dark desk: cream stock with a faint fibre wash, a red
+margin rule down the left, Courier for everything, a black ribbon for the
+text and a red one for the links. There is no bold, because a typewriter had
+none, so the title is capitals with a rule under it and the subheadings are
+underlined. Markdown code blocks carry no syntax colours, for the same
+reason, which is why `astro.config.mjs` sets `markdown.syntaxHighlight` to
+`false`.
+
+Contrast on the paper, measured: ink 12.7:1, faded ink 5.1:1, red ribbon
+5.9:1, red on hover 9.6:1. All clear WCAG AA. The margin rule carries no text.
+
+The text does not type itself out. A typewriter look is about the paper and
+the strike, and animating a post letter by letter would hold a reader back
+from the words and break the text for anybody using a screen reader.
+
+To give another page the paper look, pass `theme="paper"` to `BaseLayout`.
 
 ## Profiles and verification
 

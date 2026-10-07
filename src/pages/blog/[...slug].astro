@@ -34,7 +34,7 @@ const permalink = new URL(postPath(post), SITE_URL).href;
 const authorUrl = `${SITE_URL}/`;
 ---
 
-<BaseLayout title={postLabel(post)} description={excerpt(post)}>
+<BaseLayout title={postLabel(post)} description={excerpt(post)} theme="paper">
   <article class="h-entry">
     <header>
       {post.data.title && <h1 class="p-name">{post.data.title}</h1>}
