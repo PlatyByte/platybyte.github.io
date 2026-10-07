@@ -35,6 +35,7 @@ printf '      rel=me links in the whole page: %s (3 in <head>, 3 visible, 1 self
 check 'rel=me link elements in head' "$DIST/index.html" '<link rel="me" href='
 check 'rss alternate link'        "$DIST/index.html" '<link rel="alternate" type="application/rss+xml"'
 check 'canonical link'            "$DIST/index.html" '<link rel="canonical"'
+check 'webmention endpoint'       "$DIST/index.html" '<link rel="webmention" href="https://webmention.io/platybyte.net/webmention"'
 
 echo '-- h-card on the homepage'
 check 'h-card wrapper' "$DIST/index.html" 'class="h-card"'

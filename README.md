@@ -302,11 +302,30 @@ The script `./verify.sh` runs the full set of checks at once.
 
 ## Webmentions
 
-This site sends no webmentions and receives none. To receive replies from
-the fediverse you need a webmention endpoint. A hosted service such as
-webmention.io provides one. Put its URL in `WEBMENTION_ENDPOINT` in
-`src/site.ts`. The layout then prints a `<link rel="webmention">` element
-instead of an HTML comment.
+Every page carries this element, from `WEBMENTION_ENDPOINT` in
+`src/site.ts`:
+
+```html
+<link rel="webmention" href="https://webmention.io/platybyte.net/webmention">
+```
+
+webmention.io names every endpoint after the domain it serves, so that URL
+is fixed by the domain and needs no account to write down. It only accepts a
+webmention once `platybyte.net` is registered there.
+
+To register, open https://webmention.io and use "Sign in with your website".
+That uses IndieAuth, which reads the `rel="me"` links on the homepage. The
+GitHub one is a provider it supports, so the sign in works with what the site
+already serves.
+
+Receiving a webmention is not the same as showing one. Nothing on this site
+renders replies yet. The endpoint collects them, and webmention.io has an API
+to read them back when there is something to show. A reply from the fediverse
+reaches that endpoint only when Bridgy Fed is connected and the post was
+bridged.
+
+This site sends no webmentions. Linking to someone else's page does not
+notify them.
 
 ## What this repository does not contain
 

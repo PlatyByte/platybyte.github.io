@@ -1,6 +1,6 @@
 /**
  * Every personal value for the site lives here.
- * One value still contains the word TODO: WEBMENTION_ENDPOINT.
+ * Every value is set. Nothing here is a placeholder any more.
  */
 
 /** The apex domain. No www, no trailing slash. */
@@ -49,11 +49,20 @@ export const PROFILE_LINKS = [
 ] as const;
 
 /**
- * TODO: a webmention endpoint URL, for example from webmention.io.
- * Leave it null until you have one. A null value prints an HTML comment
- * instead of a <link rel="webmention"> element.
+ * The webmention endpoint, hosted by webmention.io. The service names every
+ * endpoint after the domain it serves, so this URL is fixed by the domain.
+ *
+ * It only accepts a webmention once platybyte.net is registered there. Sign
+ * in at https://webmention.io with "Sign in with your website". That uses
+ * IndieAuth, which reads the rel="me" links on the homepage, and the GitHub
+ * one is a provider it supports.
+ *
+ * Receiving a webmention is not the same as showing it. Nothing on this site
+ * renders replies yet. The endpoint collects them, and webmention.io has an
+ * API to read them back when there is something to show.
  */
-export const WEBMENTION_ENDPOINT: string | null = null;
+export const WEBMENTION_ENDPOINT: string | null =
+  'https://webmention.io/platybyte.net/webmention';
 
 /** Titles and descriptions for the feed and the sitemap. */
 export const SITE_TITLE = NAME;
