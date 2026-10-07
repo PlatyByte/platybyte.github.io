@@ -335,21 +335,33 @@ file, on purpose. The Bridgy Fed handle for this site is
 as `@me@platybyte.net` would need those two paths redirected to
 `fed.brid.gy`, and GitHub Pages cannot send that kind of redirect.
 
-## Version control
+## Where this lives
 
-This repository uses Jujutsu (`jj`), colocated with Git. The `.git`
-directory sits next to `.jj`, so plain `git` commands also work here.
+The checkout belongs to the `platybyte` org in the nixos configuration, as
+the project `site`:
 
-The `main` bookmark already points at the first commit. Add a GitHub remote,
-then push:
-
-```sh
-jj git remote add origin git@github.com:PlatyByte/platybyte.github.io.git
-jj git push --bookmark main --allow-new
+```
+~/Projects/platybyte/site/platybyte.github.io
 ```
 
-Later work follows the same shape. Describe the working copy commit, start a
-new one, move the bookmark, then push:
+`modules/hm/projects/platybyte/site.nix` in the nixos configuration declares
+it, and `shells/site-shell.nix` there provides the development shell: Node
+24, ImageMagick, and Python with Pillow for `tools/grade.py`. Node 24 matches
+the version `withastro/action` uses, so the local build and the GitHub
+Actions build agree.
+
+Home Manager writes an `.envrc` one level up, at `~/Projects/platybyte/site`,
+so direnv enters that shell on `cd`. It writes that file only for a user who
+turns the org on with `platybyte.enable = true`.
+
+## Version control
+
+This repository uses Jujutsu (`jj`), colocated with Git. The `.git` directory
+sits next to `.jj`, so plain `git` commands also work here. The `origin`
+remote is already set to `git@github.com:PlatyByte/platybyte.github.io.git`.
+
+Describe the working copy commit, start a new one, move the bookmark, then
+push:
 
 ```sh
 jj describe -m "post: a new note"
@@ -357,3 +369,6 @@ jj new
 jj bookmark set main -r @-
 jj git push --bookmark main
 ```
+
+jj 0.44 removed `--allow-new`. A bookmark that does not exist on the remote
+is tracked automatically on the first push.
